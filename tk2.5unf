@@ -1,0 +1,72 @@
+import requests
+import tkinter as tk
+from PIL import Image, ImageTk
+from io import BytesIO
+
+root = tk.Tk()
+root.geometry("300x500")
+root.resizable(True, True)
+root.title("Hi")
+
+times_clicked = 0
+
+def get_image():
+    url = ""  # random image
+    r = requests.get(url)
+    img_data = r.content
+    pil_img = Image.open(BytesIO(img_data))
+    tk_img = ImageTk.PhotoImage(pil_img)
+
+    # Show it
+    image_label.config(image=tk_img)
+    image_label.image = tk_img  # keep a reference
+
+def on_button_click():
+    global times_clicked
+    times_clicked += 1
+    print("I got clicked!")
+    print(times_clicked)
+    if times_clicked == 10:
+        print("You're so cool")
+
+def kill():
+    root.destroy()
+
+def open_new_window():
+    if times_clicked >= 10:
+        window2 = tk.Toplevel(root)
+        window2.geometry("300x300")
+        window2.resizable(False, False)
+        window2.title("More windows")
+
+def get_data():
+    response = requests.get("https://bgsi.io/")
+    text = response.text[:50]
+    data_label.config(text=text)
+
+# Widgets
+label = tk.Label(root, text="Hi")
+label.pack(pady=10)
+
+button = tk.Button(root, text="Clicker Game", command=on_button_click)
+button.pack(pady=5)
+
+button2 = tk.Button(root, text="More windows", command=open_new_window)
+button2.pack(pady=5)
+
+button3 = tk.Button(root, text="Kill me!", command=kill)
+button3.pack(pady=5)
+
+btn_fetch = tk.Button(root, text="Fetch Image", command=get_image)
+btn_fetch.pack(pady=10)
+
+image_label = tk.Label(root)
+image_label.pack(pady=5)
+
+btn_data = tk.Button(root, text="Fetch Text", command=get_data)
+btn_data.pack(pady=10)
+
+data_label = tk.Label(root, text="")
+data_label.pack(pady=5)
+
+root.mainloop()
